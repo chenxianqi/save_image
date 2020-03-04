@@ -46,76 +46,57 @@ public class SaveImagePlugin: FlutterPlugin, MethodCallHandler {
           val image = call.argument<ByteArray>("imageBytes") as ByteArray
           result.success(saveImageToGallery(BitmapFactory.decodeByteArray(image,0,image.size)))
         }
-        "saveFileToGallery" -> {
-          val path = call.arguments as String
-          result.success(saveFileToGallery(path))
-        }
         else -> result.notImplemented()
     }
 
   }
 
-  private fun generateFile(extension: String = ""): File {
+  private fun String.generateFile(): File {
     val storePath =  Environment.getExternalStorageDirectory().absolutePath + File.separator + getApplicationName()
     val appDir = File(storePath)
     if (!appDir.exists()) {
       appDir.mkdir()
     }
     var fileName = System.currentTimeMillis().toString()
-    if (extension.isNotEmpty()) {
-      fileName += (".$extension")
+    if (isNotEmpty()) {
+      fileName += (".${this}")
     }
     return File(appDir, fileName)
   }
 
-  private fun saveImageToGallery(bmp: Bitmap): String {
+  private fun saveImageToGallery(bmp: Bitmap): Boolean {
     try {
     val context = applicationContext
-    val file = generateFile("png")
+    val file = "png".generateFile()
       val fos = FileOutputStream(file)
       bmp.compress(Bitmap.CompressFormat.PNG, 60, fos)
       fos.flush()
       fos.close()
       val uri = Uri.fromFile(file)
-      MediaStore.Images.Media.insertImage(context?.contentResolver, bmp, "", "")
+      // MediaStore.Images.Media.insertImage(context?.contentResolver, bmp, "", "")
       context?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-      return uri.toString()
+      return true
     } catch (e: IOException) {
       e.printStackTrace()
     }
-    return ""
+    return false
   }
 
-  private fun saveFileToGallery(filePath: String): String {
-    val context = applicationContext ?: return ""
-    return try {
-      val originalFile = File(filePath)
-      val file = generateFile(originalFile.extension)
-      originalFile.copyTo(file)
-
-      val uri = Uri.fromFile(file)
-      context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-      return uri.toString()
-    } catch (e: IOException) {
-      e.printStackTrace()
-      ""
-    }
-  }
   private fun getApplicationName(): String {
-    val context = applicationContext ?: return ""
-    var ai: ApplicationInfo? = null
-    try {
-      ai = context.packageManager?.getApplicationInfo(context.packageName, 0)
+    return try {
+      var info: ApplicationInfo? = null
+      info = applicationContext?.packageManager?.getApplicationInfo(applicationContext?.packageName, 0)
+      val appName: String
+      appName = if (info != null) {
+        val charSequence = applicationContext?.packageManager?.getApplicationLabel(info)
+        StringBuilder(charSequence!!.length).append(charSequence).toString()
+      } else {
+        ""
+      }
+      appName
     } catch (e: PackageManager.NameNotFoundException) {
-    }
-    val appName: String
-    appName = if (ai != null) {
-      val charSequence = context.packageManager?.getApplicationLabel(ai)
-      StringBuilder(charSequence!!.length).append(charSequence).toString()
-    } else {
       ""
     }
-    return  appName
   }
 
 }

@@ -1,8 +1,8 @@
 name: save_image
 description: A new Flutter plugin.
 version: 0.0.1
-author:
-homepage:
+author: 361554012@qq.com
+homepage: https://github.com/chenxianqi/save_image
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
