@@ -1,6 +1,6 @@
 name: save_image
-description: A new Flutter plugin.
-version: 0.0.1
+description: This is a fluttert image saving plugin that can save images to the gallery and update
+version: 0.0.2
 homepage: https://github.com/chenxianqi/save_image
 
 environment:
