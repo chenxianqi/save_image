@@ -6,3 +6,8 @@
 ## 0.0.2
 
 * add exapple
+
+
+## 1.0.0
+
+* change version
