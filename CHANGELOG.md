@@ -11,3 +11,7 @@
 ## 1.0.0
 
 * change version
+
+## 1.0.1
+
+* add Permission Description
